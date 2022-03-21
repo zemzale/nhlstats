@@ -1,4 +1,5 @@
 import { useQuery } from "react-query"
+import { Link } from "react-router-dom"
 import { Team, AllTeams } from "../api/teams"
 
 export default function Teams() {
@@ -19,7 +20,9 @@ export default function Teams() {
         <tbody className="bg-gray-700">
           {query.data.teams.map((team: Team) => (
             <tr key={team.id} className="text-white border-b">
-              <td className="px-5 py-2">{team.name}</td>
+              <td className="px-5 py-2">
+                <Link to={`/teams/${team.id}`}>{team.name}</Link>
+              </td>
             </tr>
           ))}
         </tbody>
