@@ -10,11 +10,13 @@ export default function Teams() {
   }
 
   return (
-    <div>
+    <div className="p-10">
       <table className="text-white border-solid">
         <thead className="bg-gray-800">
           <tr>
-            <th className="text-white py-3">Team</th>
+            <th className="py-3">Team</th>
+            <th className="py-3">Conference</th>
+            <th className="py-3">Division</th>
           </tr>
         </thead>
         <tbody className="bg-gray-700">
@@ -22,6 +24,16 @@ export default function Teams() {
             <tr key={team.id} className="text-white border-b">
               <td className="px-5 py-2">
                 <Link to={`/teams/${team.id}`}>{team.name}</Link>
+              </td>
+              <td className="px-5 py-2">
+                <Link to={`/conferences/${team.conference.id}`}>
+                  {team.conference.name}
+                </Link>
+              </td>
+              <td className="px-5 py-2">
+                <Link to={`/divisions/${team.division.id}`}>
+                  {team.division.name}
+                </Link>
               </td>
             </tr>
           ))}

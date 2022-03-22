@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "react-query/devtools"
 import "./App.css"
 import Teams from "./routes/teams"
 import Team from "./routes/team"
+import Player from "./routes/player"
 
 const queryClient = new QueryClient()
 
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:id" element={<Team />} />
+            <Route path="/players/:id" element={<Player />} />
           </Routes>
         </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={true} />

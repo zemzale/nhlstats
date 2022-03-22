@@ -29,6 +29,18 @@ async function TeamPlayers(id: string) {
 interface Team {
   id: number
   name: string
+  conference: Conference
+  division: Division
+}
+
+interface Conference {
+  id: number
+  name: string
+}
+
+interface Division {
+  id: number
+  name: string
 }
 
 export { Team, AllTeams, TeamById, TeamPlayers }

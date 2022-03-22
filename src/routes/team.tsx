@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom"
 import { useQuery } from "react-query"
 import { TeamById, TeamPlayers } from "../api/teams"
+import { Player } from "../api/players"
 
 export default function Team() {
   const param = useParams()
@@ -14,29 +15,39 @@ export default function Team() {
   }
   return (
     <div className="flex flex-col text-white">
-      <div>
+      <div className="p-10">
         <div>{query.data.name}</div>
       </div>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <td>Name</td>
+      <table className="border-solid m-10">
+        <thead className="bg-gray-800">
+          <tr>
+            <td className="py-3">Name</td>
+            <td className="py-3">Number</td>
+            <td className="py-3">Position</td>
+          </tr>
+        </thead>
+        <tbody className="bg-gray-700">
+          {playerQuery.data.roster.map((player: Player) => (
+            <tr key={player.person.id} className="border-b">
+              <td className="px-5 py-2">
+                <Link to={`/players/${player.person.id}`}>
+                  {player.person.fullName}
+                </Link>
+              </td>
+              <td className="px-5 py-2">
+                <Link to={`/players/${player.person.id}`}>
+                  {player.jerseyNumber}
+                </Link>
+              </td>
+              <td className="px-5 py-2">
+                <Link to={`/players/${player.person.id}`}>
+                  {player.position.name}
+                </Link>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {playerQuery.data.roster.map((player: any) => (
-              <tr key={player.person.id} className="text-white border-b">
-                <td className="px-5 py-2">
-                  <Link to={`/palyers/${player.person.id}`}>
-                    {player.person.fullName}
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
