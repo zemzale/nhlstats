@@ -1,16 +1,48 @@
 import { useParams } from "react-router-dom"
 import { PlayerById, PlayerStatsById } from "../api/players"
 import { useQuery } from "react-query"
+import Chart from "react-apexcharts"
 
 export default function Player() {
+  //FIXME: Figure out how to add types to this
   const param = useParams()
+  //FIXME: Create some constants for the query keys
   const query = useQuery(["player", param.id], () => PlayerById(param.id))
   const queryStats = useQuery(["player.stats", param.id], () =>
     PlayerStatsById(param.id),
   )
+
   if (query.isLoading || queryStats.isLoading) {
+    //FIXME: Create a generic loading component
     return <div> Loading...</div>
   }
+  //FIXME: Need to sort the seasons by newest to oldest.
+  //FIXME: Bring out the table styles into custom styles, should be easy enough
+  //FIXME: Bring out the stats into an interface
+  //FIXME: Add tooltips for the stats
+  //
+  //
+  const statsData: Array<object> = queryStats.data.stats[0].splits
+
+  const categories = statsData.map((stats: any) => stats.season)
+  const values = statsData.map((stats: any) => stats.stat.points)
+
+  console.debug(categories, values)
+
+  const opts = {
+    chart: {
+      id: "basic-bar",
+    },
+    xaxis: {
+      categories: categories,
+    },
+  }
+  const series = [
+    {
+      name: "series-1",
+      data: values,
+    },
+  ]
   return (
     <div className="text-white">
       <div className="p-10">
@@ -28,7 +60,7 @@ export default function Player() {
           </tr>
         </thead>
         <tbody className="bg-gray-700">
-          {queryStats.data.stats[0].splits.map((split: any) => (
+          {statsData.map((split: any) => (
             <tr key={split.season}>
               <td className="px-5 py-2 bg-gray-800">
                 {seasonIdentifierFormated(split.season)}
@@ -41,6 +73,7 @@ export default function Player() {
             </tr>
           ))}
         </tbody>
+        <Chart type="line" width="500" options={opts} series={series} />
       </table>
     </div>
   )
