@@ -3,6 +3,7 @@ import { PlayerById, PlayerStatsById } from "../api/players"
 import { useQuery } from "react-query"
 import { useMemo } from "react"
 import { useTable } from "react-table"
+import { Table } from "../components/table"
 
 export default function Player() {
   //FIXME: Figure out how to add types to this
@@ -29,19 +30,9 @@ export default function Player() {
       shg: split.stat.shortHandedGoals ?? 0,
       gwg: split.stat.gameWinningGoals ?? 0,
     }))
-  }, [queryStats])
+  }, [queryStats.data])
 
   const columns = useMemo(columnsData, [])
-
-  const tableInstance = useTable({ columns, data })
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance
-
-  if (query.isLoading || queryStats.isLoading) {
-    //FIXME: Create a generic loading component
-    return <div> Loading...</div>
-  }
 
   //FIXME: Need to sort the seasons by newest to oldest.
   //FIXME: Bring out the table styles into custom styles, should be easy enough
@@ -52,53 +43,22 @@ export default function Player() {
     <div className="text-white flex flex-col">
       <div className="flex flex-row">
         <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">#{query.data.primaryNumber}</div>
-          <div className="p-2">Name : {query.data.fullName}</div>
-          <div className="p-2">Age :{query.data.currentAge}</div>
+          <div className="p-2">#{query.data?.primaryNumber}</div>
+          <div className="p-2">Name : {query.data?.fullName}</div>
+          <div className="p-2">Age :{query.data?.currentAge}</div>
         </div>
         <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">Nationality : {query.data.nationality}</div>
-          <div className="p-2">Country : {query.data.birthCountry}</div>
-          <div className="p-2">City :{query.data.birthCity}</div>
+          <div className="p-2">Nationality : {query.data?.nationality}</div>
+          <div className="p-2">Country : {query.data?.birthCountry}</div>
+          <div className="p-2">City :{query.data?.birthCity}</div>
         </div>
         <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">Height : {query.data.height}</div>
-          <div className="p-2">Country : {query.data.weight}</div>
-          <div className="p-2">Shoots : {query.data.shootsCatches}</div>
+          <div className="p-2">Height : {query.data?.height}</div>
+          <div className="p-2">Country : {query.data?.weight}</div>
+          <div className="p-2">Shoots : {query.data?.shootsCatches}</div>
         </div>
       </div>
-      <table className="border-solid m-10" {...getTableProps()}>
-        <thead className="bg-gray-800">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="py-3 px-5" {...column.getHeaderProps()}>
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="bg-gray-700" {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      className="px-5 py-2 text-center"
-                      {...cell.getCellProps()}
-                    >
-                      {cell.render("Cell")}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <Table columns={columns} data={data} />
     </div>
   )
 }
