@@ -3,16 +3,19 @@ import { useQuery } from "react-query"
 import { TeamById, TeamPlayers } from "../api/teams"
 import { Player } from "../api/players"
 
-export default function Team() {
-  const param = useParams()
-  const query = useQuery(["teams", param.id], () => TeamById(param.id))
-  const playerQuery = useQuery(["teams.palyers", param.id], () =>
-    TeamPlayers(param.id),
-  )
+export default function TeamPage() {
+  const { id } = useParams<TeamId>()
+  if (id === undefined) {
+    return <div>Player ID not found</div>
+  }
+
+  const query = useQuery(["teams", id], () => TeamById(id!))
+  const playerQuery = useQuery(["teams.palyers", id], () => TeamPlayers(id!))
 
   if (query.isLoading || playerQuery.isLoading) {
     return <div>Loading...</div>
   }
+
   return (
     <div className="flex flex-col text-white">
       <div className="p-10">
@@ -29,25 +32,25 @@ export default function Team() {
         <tbody className="bg-gray-700">
           {playerQuery.data.roster.map((player: Player) => (
             <tr key={player.person.id} className="border-b">
-              <td className="px-5 py-2">
-                <Link to={`/players/${player.person.id}`}>
-                  {player.person.fullName}
-                </Link>
-              </td>
-              <td className="px-5 py-2">
-                <Link to={`/players/${player.person.id}`}>
-                  {player.jerseyNumber}
-                </Link>
-              </td>
-              <td className="px-5 py-2">
-                <Link to={`/players/${player.person.id}`}>
-                  {player.position.name}
-                </Link>
-              </td>
+              {playerColumnElement(player.person.id, player.person.fullName)}
+              {playerColumnElement(player.person.id, player.jerseyNumber)}
+              {playerColumnElement(player.person.id, player.position.name)}
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   )
+}
+
+const playerColumnElement = (id: number, value: any) => {
+  return (
+    <td className="px-5 py-2">
+      <Link to={`/players/${id}`}>{value}</Link>
+    </td>
+  )
+}
+
+type TeamId = {
+  id: string
 }

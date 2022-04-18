@@ -20,7 +20,7 @@ async function PlayerStatsById(id: string) {
     .catch((err) => console.error(err))
 }
 
-interface Player {
+export interface Player {
   person: Person
   jerseyNumber: string
   position: Position
@@ -38,4 +38,4 @@ interface Position {
   abbreviation: string
 }
 
-export { PlayerById, PlayerStatsById, Player }
+export { PlayerById, PlayerStatsById }

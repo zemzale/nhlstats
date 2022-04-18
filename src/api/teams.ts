@@ -26,7 +26,7 @@ async function TeamPlayers(id: string) {
     .catch((err) => console.error(err))
 }
 
-interface Team {
+export interface Team {
   id: number
   name: string
   conference: Conference
@@ -43,4 +43,4 @@ interface Division {
   name: string
 }
 
-export { Team, AllTeams, TeamById, TeamPlayers }
+export { AllTeams, TeamById, TeamPlayers }
