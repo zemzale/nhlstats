@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom"
 import { PlayerById, PlayerStatsById } from "../api/players"
 import { useQuery } from "react-query"
+import { useMemo } from "react"
+import { useTable } from "react-table"
 
 export default function Player() {
   //FIXME: Figure out how to add types to this
@@ -8,22 +10,43 @@ export default function Player() {
   if (id === undefined) {
     return <div>Player not found</div>
   }
-  const playerId = id
   //FIXME: Create some constants for the query keys
-  const query = useQuery(["player", playerId], () => PlayerById(playerId))
-  const queryStats = useQuery(["player.stats", playerId], () =>
-    PlayerStatsById(playerId),
-  )
+  const query = useQuery(["player", id], () => PlayerById(id))
+  const queryStats = useQuery(["player.stats", id], () => PlayerStatsById(id))
+
+  const data = useMemo(() => {
+    if (queryStats.data === undefined) {
+      return []
+    }
+    return queryStats.data.stats[0].splits.map((split: any) => ({
+      season: seasonIdentifierFormated(split.season),
+      gp: split.stat.games,
+      p: split.stat.points,
+      a: split.stat.assists,
+      g: split.stat.goals,
+      ppg: Math.round((split.stat.points / split.stat.games) * 100) / 100,
+      pim: split.stat.pim,
+      shg: split.stat.shortHandedGoals ?? 0,
+      gwg: split.stat.gameWinningGoals ?? 0,
+    }))
+  }, [queryStats])
+
+  const columns = useMemo(columnsData, [])
+
+  const tableInstance = useTable({ columns, data })
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    tableInstance
 
   if (query.isLoading || queryStats.isLoading) {
     //FIXME: Create a generic loading component
     return <div> Loading...</div>
   }
+
   //FIXME: Need to sort the seasons by newest to oldest.
   //FIXME: Bring out the table styles into custom styles, should be easy enough
   //FIXME: Bring out the stats into an interface
   //FIXME: Add tooltips for the stats
-  const statsData: Array<object> = queryStats.data.stats[0].splits
 
   return (
     <div className="text-white flex flex-col">
@@ -44,48 +67,80 @@ export default function Player() {
           <div className="p-2">Shoots : {query.data.shootsCatches}</div>
         </div>
       </div>
-      <table className="border-solid m-10">
+      <table className="border-solid m-10" {...getTableProps()}>
         <thead className="bg-gray-800">
-          <tr>
-            <td className="py-3 px-5">Season</td>
-            <td className="py-3 px-5">GP</td>
-            <td className="py-3 px-5">P</td>
-            <td className="py-3 px-5">A</td>
-            <td className="py-3 px-5">G</td>
-            <td className="py-3 px-5">PPG</td>
-            <td className="py-3 px-5">PIM</td>
-            <td className="py-3 px-5">PPG</td>
-            <td className="py-3 px-5">SHG</td>
-            <td className="py-3 px-5">GWG</td>
-          </tr>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th className="py-3 px-5" {...column.getHeaderProps()}>
+                  {column.render("Header")}
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
-        <tbody className="bg-gray-700">
-          {statsData
-            .filter((v: any) => v.league.name === "National Hockey League")
-            .map((split: any) => (
-              <tr key={split.season}>
-                <td className="px-5 py-2 bg-gray-800">
-                  {seasonIdentifierFormated(split.season)}
-                </td>
-                <td className="px-5 py-2">{split.stat.games}</td>
-                <td className="px-5 py-2">{split.stat.points}</td>
-                <td className="px-5 py-2">{split.stat.assists}</td>
-                <td className="px-5 py-2">{split.stat.goals}</td>
-                <td className="px-5 py-2">
-                  {Math.round((split.stat.points / split.stat.games) * 100) /
-                    100}
-                </td>
-                <td className="px-5 py-2">{split.stat.pim}</td>
-                <td className="px-5 py-2">{split.stat.powerPlayGoals}</td>
-                <td className="px-5 py-2">{split.stat.shortHandedGoals}</td>
-                <td className="px-5 py-2">{split.stat.gameWinningGoals}</td>
+        <tbody className="bg-gray-700" {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row)
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td
+                      className="px-5 py-2 text-center"
+                      {...cell.getCellProps()}
+                    >
+                      {cell.render("Cell")}
+                    </td>
+                  )
+                })}
               </tr>
-            ))}
+            )
+          })}
         </tbody>
       </table>
     </div>
   )
 }
+
+const columnsData = () => [
+  {
+    Header: "Season",
+    accessor: "season",
+  },
+  {
+    Header: "GP",
+    accessor: "gp",
+  },
+  {
+    Header: "P",
+    accessor: "p",
+  },
+  {
+    Header: "A",
+    accessor: "a",
+  },
+  {
+    Header: "G",
+    accessor: "g",
+  },
+  {
+    Header: "PPG",
+    accessor: "ppg",
+  },
+  {
+    Header: "PIM",
+    accessor: "pim",
+  },
+  {
+    Header: "SHG",
+    accessor: "shg",
+  },
+  {
+    Header: "GWG",
+    accessor: "gwg",
+  },
+]
 
 function seasonIdentifierFormated(seasonId: string): string {
   return seasonId.substring(0, 4) + "-" + seasonId.substring(4)
