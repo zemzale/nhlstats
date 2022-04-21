@@ -10,12 +10,12 @@ export default function Homepage() {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="p-10 grid grid-cols-4 gap-4">
       {query.data.records.map((record: any) => (
         <table key={record.division.id} className="border-solid">
           <thead className="bg-gray-800">
             <tr>
-              <td>{record.division.name}</td>
+              <td className="p-2">{record.division.name}</td>
               <td></td>
             </tr>
           </thead>
@@ -23,7 +23,7 @@ export default function Homepage() {
             {record.teamRecords.map((team: any) => (
               <tr key={team.team.id}>
                 <Link to={`/teams/${team.team.id}`}>
-                  <td>{team.team.name}</td>
+                  <td className="p-2">{team.team.name}</td>
                 </Link>
                 <td>{team.points}</td>
               </tr>
