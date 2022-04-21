@@ -32,13 +32,13 @@ export function Table(props: any) {
           prepareRow(row)
           return (
             <tr {...row.getRowProps()}>
-                row.cells.map((cell) => {
+              {row.cells.map((cell) => {
                 return (
                   <td
                     className="px-5 py-2 text-center"
                     {...cell.getCellProps()}
                   >
-                    {cell.render("Cell")}
+                    {cell.render("Cell", { test: "fuck" })}
                   </td>
                 )
               })}

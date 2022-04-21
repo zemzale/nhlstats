@@ -1,7 +1,34 @@
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { useQuery } from "react-query"
 import { TeamById, TeamPlayers } from "../api/teams"
 import { Player } from "../api/players"
+import { Table } from "../components/table"
+import { useMemo } from "react"
+
+function TableView(props: any) {
+  const playerQuery = props.playerQuery
+  const query = props.query
+  const navigate = useNavigate()
+
+  const data = useMemo(() => {
+    return playerQuery.data.roster.map((player: Player) => ({
+      name: player.person.fullName,
+      number: player.jerseyNumber,
+      position: player.position.name,
+      id: player.person.id,
+    }))
+  }, [playerQuery.data])
+
+  const columns = useMemo(columnsData, [])
+  return (
+    <div className="flex flex-col text-white">
+      <div className="p-10">
+        <div>{query.data.name}</div>
+      </div>
+      <Table columns={columns} data={data} />
+    </div>
+  )
+}
 
 export default function TeamPage() {
   const { id } = useParams<TeamId>()
@@ -15,33 +42,32 @@ export default function TeamPage() {
   if (query.isLoading || playerQuery.isLoading) {
     return <div>Loading...</div>
   }
-
-  return (
-    <div className="flex flex-col text-white">
-      <div className="p-10">
-        <div>{query.data.name}</div>
-      </div>
-      <table className="border-solid m-10">
-        <thead className="bg-gray-800">
-          <tr>
-            <td className="py-3">Name</td>
-            <td className="py-3">Number</td>
-            <td className="py-3">Position</td>
-          </tr>
-        </thead>
-        <tbody className="bg-gray-700">
-          {playerQuery.data.roster.map((player: Player) => (
-            <tr key={player.person.id} className="border-b">
-              {playerColumnElement(player.person.id, player.person.fullName)}
-              {playerColumnElement(player.person.id, player.jerseyNumber)}
-              {playerColumnElement(player.person.id, player.position.name)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
+  return <TableView query={query} playerQuery={playerQuery} />
 }
+
+const columnsData = () => [
+  {
+    Header: "Name",
+    accessor: "name",
+    Cell: (props: any) => {
+      return playerColumnElement(props.row.original.id, props.value)
+    },
+  },
+  {
+    Header: "Number",
+    accessor: "number",
+    Cell: (props: any) => {
+      return playerColumnElement(props.row.original.id, props.value)
+    },
+  },
+  {
+    Header: "Position",
+    accessor: "position",
+    Cell: (props: any) => {
+      return playerColumnElement(props.row.original.id, props.value)
+    },
+  },
+]
 
 const playerColumnElement = (id: number, value: any) => {
   return (
