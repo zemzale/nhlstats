@@ -12,7 +12,7 @@ const queryClient = new QueryClient()
 function App() {
   //FIXME: Add catch all route so we don't 404
   return (
-    <div className="bg-gray-900 text-white">
+    <div>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
