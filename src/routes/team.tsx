@@ -1,34 +1,9 @@
-import { Link, useParams, useNavigate } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useQuery } from "react-query"
-import { TeamById, TeamPlayers } from "../api/teams"
+import { TeamById, TeamPlayers, Team } from "../api/teams"
 import { Player } from "../api/players"
 import { Table } from "../components/table"
 import { useMemo } from "react"
-
-function TableView(props: any) {
-  const playerQuery = props.playerQuery
-  const query = props.query
-  const navigate = useNavigate()
-
-  const data = useMemo(() => {
-    return playerQuery.data.roster.map((player: Player) => ({
-      name: player.person.fullName,
-      number: player.jerseyNumber,
-      position: player.position.name,
-      id: player.person.id,
-    }))
-  }, [playerQuery.data])
-
-  const columns = useMemo(columnsData, [])
-  return (
-    <div className="flex flex-col text-white">
-      <div className="p-10">
-        <div>{query.data.name}</div>
-      </div>
-      <Table columns={columns} data={data} />
-    </div>
-  )
-}
 
 export default function TeamPage() {
   const { id } = useParams<TeamId>()
@@ -36,13 +11,43 @@ export default function TeamPage() {
     return <div>Player ID not found</div>
   }
 
-  const query = useQuery(["teams", id], () => TeamById(id!))
-  const playerQuery = useQuery(["teams.palyers", id], () => TeamPlayers(id!))
+  const teamsQuery = useQuery<Team, Error>(["teams", id], () => TeamById(id!))
+  const playerQuery = useQuery<Player[], Error>(["teams.palyers", id], () =>
+    TeamPlayers(id!),
+  )
 
-  if (query.isLoading || playerQuery.isLoading) {
+  if (teamsQuery.isLoading || playerQuery.isLoading) {
     return <div>Loading...</div>
   }
-  return <TableView query={query} playerQuery={playerQuery} />
+  if (!teamsQuery.isSuccess || !playerQuery.isSuccess) {
+    return <div>We had a whoopsie!</div>
+  }
+  return <TableView team={teamsQuery.data} players={playerQuery.data} />
+}
+
+interface TableViewProps {
+  team: Team
+  players: Player[]
+}
+
+function TableView({ players, team }: TableViewProps) {
+  const data = useMemo(() => {
+    return players.map((player: Player) => ({
+      name: player.person.fullName,
+      number: player.jerseyNumber,
+      position: player.position.name,
+      id: player.person.id,
+    }))
+  }, [players])
+  const columns = useMemo(columnsData, [])
+  return (
+    <div className="flex flex-col text-white">
+      <div className="p-10">
+        <div>{team.name}</div>
+      </div>
+      <Table columns={columns} data={data} />
+    </div>
+  )
 }
 
 const columnsData = () => [
@@ -69,7 +74,7 @@ const columnsData = () => [
   },
 ]
 
-const playerColumnElement = (id: number, value: any) => {
+const playerColumnElement = (id: number, value: String | Number) => {
   return (
     <td className="px-5 py-2">
       <Link to={`/players/${id}`}>{value}</Link>

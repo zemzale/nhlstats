@@ -23,6 +23,7 @@ async function TeamPlayers(id: string) {
     headers: {},
   })
     .then((response) => response.json())
+    .then((response) => response.roster)
     .catch((err) => console.error(err))
 }
 
