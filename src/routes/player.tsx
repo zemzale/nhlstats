@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom"
-import { PlayerById, PlayerStatsById } from "../api/players"
+import { PlayerById, PlayerStatsById, Person, Split } from "../api/players"
 import { useQuery } from "react-query"
 import { useMemo } from "react"
-import { useTable } from "react-table"
 import { Table } from "../components/table"
 
 export default function Player() {
@@ -11,15 +10,32 @@ export default function Player() {
   if (id === undefined) {
     return <div>Player not found</div>
   }
-  //FIXME: Create some constants for the query keys
-  const query = useQuery(["player", id], () => PlayerById(id))
-  const queryStats = useQuery(["player.stats", id], () => PlayerStatsById(id))
 
+  //FIXME: Create some constants for the query keys
+  const query = useQuery<Person, Error>(["player", id], () => PlayerById(id))
+  const queryStats = useQuery<Split[], Error>(["player.stats", id], () =>
+    PlayerStatsById(id),
+  )
+
+  if (queryStats.isLoading || query.isLoading) {
+    return <div>Loading...</div>
+  }
+  if (!queryStats.isSuccess || !query.isSuccess) {
+    return <div>Whoopsie</div>
+  }
+
+  return <PlayerView person={query.data} splits={queryStats.data} />
+}
+
+interface PlayerViewProps {
+  person: Person
+  splits: Split[]
+}
+
+function PlayerView({ person, splits }: PlayerViewProps) {
+  console.debug(splits)
   const data = useMemo(() => {
-    if (queryStats.data === undefined) {
-      return []
-    }
-    return queryStats.data.stats[0].splits.map((split: any) => ({
+    return splits.map((split: Split) => ({
       season: seasonIdentifierFormated(split.season),
       gp: split.stat.games,
       p: split.stat.points,
@@ -30,35 +46,43 @@ export default function Player() {
       shg: split.stat.shortHandedGoals ?? 0,
       gwg: split.stat.gameWinningGoals ?? 0,
     }))
-  }, [queryStats.data])
+  }, [splits])
 
   const columns = useMemo(columnsData, [])
 
   //FIXME: Need to sort the seasons by newest to oldest.
-  //FIXME: Bring out the table styles into custom styles, should be easy enough
-  //FIXME: Bring out the stats into an interface
   //FIXME: Add tooltips for the stats
 
   return (
     <div className="text-white flex flex-col">
-      <div className="flex flex-row">
-        <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">#{query.data?.primaryNumber}</div>
-          <div className="p-2">Name : {query.data?.fullName}</div>
-          <div className="p-2">Age :{query.data?.currentAge}</div>
-        </div>
-        <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">Nationality : {query.data?.nationality}</div>
-          <div className="p-2">Country : {query.data?.birthCountry}</div>
-          <div className="p-2">City :{query.data?.birthCity}</div>
-        </div>
-        <div className="p-10 flex flex-col text-4xl">
-          <div className="p-2">Height : {query.data?.height}</div>
-          <div className="p-2">Country : {query.data?.weight}</div>
-          <div className="p-2">Shoots : {query.data?.shootsCatches}</div>
-        </div>
-      </div>
+      <PlayerHeader person={person} />
       <Table columns={columns} data={data} />
+    </div>
+  )
+}
+
+interface PlayerHeaderProps {
+  person: Person
+}
+
+function PlayerHeader({ person }: PlayerHeaderProps) {
+  return (
+    <div className="flex flex-row">
+      <div className="p-10 flex flex-col text-4xl">
+        <div className="p-2">#{person.primaryNumber}</div>
+        <div className="p-2">Name : {person.fullName}</div>
+        <div className="p-2">Age :{person.currentAge}</div>
+      </div>
+      <div className="p-10 flex flex-col text-4xl">
+        <div className="p-2">Nationality : {person.nationality}</div>
+        <div className="p-2">Country : {person.birthCountry}</div>
+        <div className="p-2">City :{person.birthCity}</div>
+      </div>
+      <div className="p-10 flex flex-col text-4xl">
+        <div className="p-2">Height : {person.height}</div>
+        <div className="p-2">Country : {person.weight}</div>
+        <div className="p-2">Shoots : {person.shootsCatches}</div>
+      </div>
     </div>
   )
 }
