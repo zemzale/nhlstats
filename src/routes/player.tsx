@@ -1,8 +1,8 @@
-import { useParams } from "react-router-dom"
-import { PlayerById, PlayerStatsById, Person, Split } from "../api/players"
-import { useQuery } from "react-query"
-import { useMemo } from "react"
-import { Table } from "../components/table"
+import { useParams } from 'react-router-dom'
+import { PlayerById, PlayerStatsById, Person, Split } from '../api/players'
+import { useQuery } from 'react-query'
+import { useMemo } from 'react'
+import { Table } from '../components/table'
 
 export default function Player() {
   //FIXME: Figure out how to add types to this
@@ -12,8 +12,8 @@ export default function Player() {
   }
 
   //FIXME: Create some constants for the query keys
-  const query = useQuery<Person, Error>(["player", id], () => PlayerById(id))
-  const queryStats = useQuery<Split[], Error>(["player.stats", id], () =>
+  const query = useQuery<Person, Error>(['player', id], () => PlayerById(id))
+  const queryStats = useQuery<Split[], Error>(['player.stats', id], () =>
     PlayerStatsById(id),
   )
 
@@ -33,7 +33,6 @@ interface PlayerViewProps {
 }
 
 function PlayerView({ person, splits }: PlayerViewProps) {
-  console.debug(splits)
   const data = useMemo(() => {
     return splits.map((split: Split) => ({
       season: seasonIdentifierFormated(split.season),
@@ -89,43 +88,43 @@ function PlayerHeader({ person }: PlayerHeaderProps) {
 
 const columnsData = () => [
   {
-    Header: "Season",
-    accessor: "season",
+    Header: 'Season',
+    accessor: 'season',
   },
   {
-    Header: "GP",
-    accessor: "gp",
+    Header: 'GP',
+    accessor: 'gp',
   },
   {
-    Header: "P",
-    accessor: "p",
+    Header: 'P',
+    accessor: 'p',
   },
   {
-    Header: "A",
-    accessor: "a",
+    Header: 'A',
+    accessor: 'a',
   },
   {
-    Header: "G",
-    accessor: "g",
+    Header: 'G',
+    accessor: 'g',
   },
   {
-    Header: "PPG",
-    accessor: "ppg",
+    Header: 'PPG',
+    accessor: 'ppg',
   },
   {
-    Header: "PIM",
-    accessor: "pim",
+    Header: 'PIM',
+    accessor: 'pim',
   },
   {
-    Header: "SHG",
-    accessor: "shg",
+    Header: 'SHG',
+    accessor: 'shg',
   },
   {
-    Header: "GWG",
-    accessor: "gwg",
+    Header: 'GWG',
+    accessor: 'gwg',
   },
 ]
 
 function seasonIdentifierFormated(seasonId: string): string {
-  return seasonId.substring(0, 4) + "-" + seasonId.substring(4)
+  return seasonId.substring(0, 4) + '-' + seasonId.substring(4)
 }

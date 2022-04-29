@@ -4,20 +4,12 @@ import {
   UseSortByInstanceProps,
   UseSortByOptions,
   UseSortByState,
-} from "react-table"
+} from 'react-table'
 
-declare module "react-table" {
-  export interface TableOptions<D extends object> extends UseSortByOptions<D> {}
-
-  export interface TableInstance<D extends object = {}>
-    extends UseSortByInstanceProps<D> {}
-
-  export interface TableState<D extends object = {}>
-    extends UseSortByState<D> {}
-
-  export interface Column<D extends object = {}>
-    extends UseSortByColumnOptions<D> {}
-
-  export interface ColumnInstance<D extends object = {}>
-    extends UseSortByColumnProps<D> {}
+declare module 'react-table' {
+  export type TableOptions<D extends object> = UseSortByOptions<D>
+  export type TableInstance<D extends object = Record<string, unknown>> = UseSortByInstanceProps<D>
+  export type TableState<D extends object = Record<string, unknown>> = UseSortByState<D>
+  export type Column<D extends object = Record<string, unknown>> = UseSortByColumnOptions<D>
+  export type ColumnInstance<D extends object = Record<string, unknown>> = UseSortByColumnProps<D>
 }

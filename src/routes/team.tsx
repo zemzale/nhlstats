@@ -1,9 +1,9 @@
-import { Link, useParams } from "react-router-dom"
-import { useQuery } from "react-query"
-import { TeamById, TeamPlayers, Team } from "../api/teams"
-import { Player } from "../api/players"
-import { Table } from "../components/table"
-import { useMemo } from "react"
+import { Link, useParams } from 'react-router-dom'
+import { useQuery } from 'react-query'
+import { TeamById, TeamPlayers, Team } from '../api/teams'
+import { Player } from '../api/players'
+import { Table } from '../components/table'
+import { useMemo } from 'react'
 
 export default function TeamPage() {
   const { id } = useParams<TeamId>()
@@ -11,9 +11,9 @@ export default function TeamPage() {
     return <div>Player ID not found</div>
   }
 
-  const teamsQuery = useQuery<Team, Error>(["teams", id], () => TeamById(id!))
-  const playerQuery = useQuery<Player[], Error>(["teams.palyers", id], () =>
-    TeamPlayers(id!),
+  const teamsQuery = useQuery<Team, Error>(['teams', id], () => TeamById(id))
+  const playerQuery = useQuery<Player[], Error>(['teams.palyers', id], () =>
+    TeamPlayers(id),
   )
 
   if (teamsQuery.isLoading || playerQuery.isLoading) {
@@ -32,7 +32,7 @@ interface TableViewProps {
 
 function TableView({ players, team }: TableViewProps) {
   const data = useMemo(() => {
-    return players.map((player: Player) => ({
+    return players.map((player: Player): Original => ({
       name: player.person.fullName,
       number: player.jerseyNumber,
       position: player.position.name,
@@ -50,31 +50,43 @@ function TableView({ players, team }: TableViewProps) {
   )
 }
 
+interface ColumnProps {
+    row: Record<string, Original>,
+    value: string
+}
+
+interface Original {
+    name: string
+    number: string
+    position: string
+    id: number
+}
+
 const columnsData = () => [
   {
-    Header: "Name",
-    accessor: "name",
-    Cell: (props: any) => {
+    Header: 'Name',
+    accessor: 'name',
+    Cell: (props: ColumnProps) => {
       return playerColumnElement(props.row.original.id, props.value)
     },
   },
   {
-    Header: "Number",
-    accessor: "number",
-    Cell: (props: any) => {
+    Header: 'Number',
+    accessor: 'number',
+    Cell: (props: ColumnProps) => {
       return playerColumnElement(props.row.original.id, props.value)
     },
   },
   {
-    Header: "Position",
-    accessor: "position",
-    Cell: (props: any) => {
+    Header: 'Position',
+    accessor: 'position',
+    Cell: (props: ColumnProps) => {
       return playerColumnElement(props.row.original.id, props.value)
     },
   },
 ]
 
-const playerColumnElement = (id: number, value: String | Number) => {
+const playerColumnElement = (id: number, value: string | number) => {
   return (
     <td className="px-5 py-2">
       <Link to={`/players/${id}`}>{value}</Link>

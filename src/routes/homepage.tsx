@@ -1,9 +1,9 @@
-import { useQuery } from "react-query"
-import { RegularSeason, Record, TeamRecord } from "../api/standings"
-import { Link } from "react-router-dom"
+import { useQuery } from 'react-query'
+import { RegularSeason, Record, TeamRecord } from '../api/standings'
+import { Link } from 'react-router-dom'
 
 export default function Homepage() {
-  const query = useQuery<Record[], Error>("standings", RegularSeason)
+  const query = useQuery<Record[], Error>('standings', RegularSeason)
 
   if (query.isLoading) {
     return <div> Loading... </div>

@@ -1,9 +1,9 @@
-import { useQuery } from "react-query"
-import { Link } from "react-router-dom"
-import { Team, AllTeams } from "../api/teams"
+import { useQuery } from 'react-query'
+import { Link } from 'react-router-dom'
+import { Team, AllTeams } from '../api/teams'
 
 export default function Teams() {
-  const query = useQuery("teams", AllTeams)
+  const query = useQuery('teams', AllTeams)
 
   if (query.isLoading) {
     return <div> Loading... </div>

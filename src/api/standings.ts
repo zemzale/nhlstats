@@ -1,13 +1,12 @@
-import { Team } from "./teams"
+import { Team } from './teams'
 
 async function RegularSeason() {
-  return fetch("https://statsapi.web.nhl.com/api/v1/standings/regularSeason", {
-    method: "GET",
+  return fetch('https://statsapi.web.nhl.com/api/v1/standings/regularSeason', {
+    method: 'GET',
     headers: {},
   })
     .then((response) => response.json())
     .then((response) => response.records)
-    .catch((err) => console.error(err))
 }
 
 export interface League {

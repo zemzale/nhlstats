@@ -1,24 +1,22 @@
 async function PlayerById(id: string) {
   return fetch(`https://statsapi.web.nhl.com/api/v1/people/${id}`, {
-    method: "GET",
+    method: 'GET',
     headers: {},
   })
     .then((response) => response.json())
     .then((response) => response.people.pop())
-    .catch((err) => console.error(err))
 }
 
 async function PlayerStatsById(id: string) {
   return fetch(
     `https://statsapi.web.nhl.com/api/v1/people/${id}/stats?stats=yearByYear`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {},
     },
   )
     .then((response) => response.json())
     .then((response) => response.stats.pop().splits)
-    .catch((err) => console.error(err))
 }
 
 export interface CurrentTeam {
@@ -79,7 +77,13 @@ interface Position {
 
 export interface Type {
   displayName: string
-  gameType?: any
+  gameType?: GameType
+}
+
+export interface GameType {
+  id: string
+  description: string
+  postseason: boolean
 }
 
 export interface Stat2 {

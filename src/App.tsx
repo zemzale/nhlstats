@@ -1,11 +1,11 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from "react-query"
-import { ReactQueryDevtools } from "react-query/devtools"
-import "./App.css"
-import Teams from "./routes/teams"
-import Team from "./routes/team"
-import Player from "./routes/player"
-import Homepage from "./routes/homepage"
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import './App.css'
+import Teams from './routes/teams'
+import Team from './routes/team'
+import Player from './routes/player'
+import Homepage from './routes/homepage'
 
 const queryClient = new QueryClient()
 
